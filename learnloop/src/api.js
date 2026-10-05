@@ -8,7 +8,14 @@ const local=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{retu
 async function req(path,opts={}){
   const token=localStorage.getItem('token')
   const res=await fetch(BASE+path,{...opts,headers:{'Content-Type':'application/json',...(token&&{Authorization:`Bearer ${token}`})}})
-  if(!res.ok) throw new Error(res.status===404?'Course not found.':'The server returned an error. Please try again.')
+  if(!res.ok) {
+    let msg = res.status===404?'Course not found.':'The server returned an error. Please try again.';
+    try {
+      const data = await res.json();
+      if (data && data.error) msg = data.error;
+    } catch {}
+    throw new Error(msg);
+  }
   return res.json()
 }
 
@@ -29,5 +36,29 @@ export const api={
   async saveResult(r){
     localStorage.setItem('results',JSON.stringify([...local('results',[]),{...r,at:Date.now()}]))
     if(BASE) await req('/results',{method:'POST',body:JSON.stringify(r)})
+  },
+  async register(email, password) {
+    if (!BASE) throw new Error('Backend URL not configured');
+    const res = await req('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+    if (res.token) localStorage.setItem('token', res.token);
+    return res;
+  },
+  async login(email, password) {
+    if (!BASE) throw new Error('Backend URL not configured');
+    const res = await req('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+    if (res.token) localStorage.setItem('token', res.token);
+    return res;
+  },
+  logout() {
+    localStorage.removeItem('token');
+  },
+  getToken() {
+    return localStorage.getItem('token');
   }
 }

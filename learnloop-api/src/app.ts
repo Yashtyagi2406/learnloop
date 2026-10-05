@@ -7,6 +7,7 @@ import { healthRouter } from './routes/health.js';
 import { createCoursesRouter } from './routes/courses.js';
 import { createProgressRouter } from './routes/progress.js';
 import { createResultsRouter } from './routes/results.js';
+import { createAuthRouter } from './routes/auth.js';
 
 export function createApp(db: Database): Express {
   const app = express();
@@ -37,6 +38,7 @@ export function createApp(db: Database): Express {
   app.use('/courses', createCoursesRouter(db));
   app.use('/progress', createProgressRouter(db));
   app.use('/results', createResultsRouter(db));
+  app.use('/auth', createAuthRouter(db));
 
   // Centralized Error Handling
   app.use(notFoundHandler);

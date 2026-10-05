@@ -210,6 +210,101 @@ describe('LearnLoop API Integration Tests', () => {
     });
   });
 
+  describe('Auth API and User Scoping', () => {
+    it('POST /auth/register should register a new user and return token', async () => {
+      const res = await request(app)
+        .post('/auth/register')
+        .send({ email: 'student@example.com', password: 'password123' });
+
+      expect(res.status).toBe(201);
+      expect(res.body).toHaveProperty('token');
+      expect(res.body.user).toHaveProperty('id');
+      expect(res.body.user.email).toBe('student@example.com');
+    });
+
+    it('POST /auth/register should reject duplicate email', async () => {
+      await request(app)
+        .post('/auth/register')
+        .send({ email: 'student@example.com', password: 'password123' });
+
+      const res = await request(app)
+        .post('/auth/register')
+        .send({ email: 'student@example.com', password: 'password123' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toContain('Email already in use');
+    });
+
+    it('POST /auth/login should authenticate user and return token', async () => {
+      await request(app)
+        .post('/auth/register')
+        .send({ email: 'student2@example.com', password: 'password123' });
+
+      const res = await request(app)
+        .post('/auth/login')
+        .send({ email: 'student2@example.com', password: 'password123' });
+
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty('token');
+      expect(res.body.user.email).toBe('student2@example.com');
+    });
+
+    it('POST /auth/login should reject incorrect password with 401', async () => {
+      await request(app)
+        .post('/auth/register')
+        .send({ email: 'student3@example.com', password: 'password123' });
+
+      const res = await request(app)
+        .post('/auth/login')
+        .send({ email: 'student3@example.com', password: 'wrongpassword' });
+
+      expect(res.status).toBe(401);
+      expect(res.body.error).toContain('Invalid email or password');
+    });
+
+    it('should scope progress and results independently per authenticated user', async () => {
+      // Register user A
+      const userARes = await request(app)
+        .post('/auth/register')
+        .send({ email: 'userA@example.com', password: 'password123' });
+      const tokenA = userARes.body.token;
+
+      // Register user B
+      const userBRes = await request(app)
+        .post('/auth/register')
+        .send({ email: 'userB@example.com', password: 'password123' });
+      const tokenB = userBRes.body.token;
+
+      // User A saves progress
+      await request(app)
+        .put('/progress')
+        .set('Authorization', `Bearer ${tokenA}`)
+        .send({ 'html-css': ['l1'] });
+
+      // User B saves different progress
+      await request(app)
+        .put('/progress')
+        .set('Authorization', `Bearer ${tokenB}`)
+        .send({ javascript: ['l1', 'l2'] });
+
+      // Check User A progress
+      const checkA = await request(app)
+        .get('/progress')
+        .set('Authorization', `Bearer ${tokenA}`);
+      expect(checkA.body).toEqual({ 'html-css': ['l1'] });
+
+      // Check User B progress
+      const checkB = await request(app)
+        .get('/progress')
+        .set('Authorization', `Bearer ${tokenB}`);
+      expect(checkB.body).toEqual({ javascript: ['l1', 'l2'] });
+
+      // Check guest/default user progress remains empty
+      const checkDefault = await request(app).get('/progress');
+      expect(checkDefault.body).toEqual({});
+    });
+  });
+
   describe('Error handling', () => {
     it('should return 404 { error: "Not found" } for unknown routes', async () => {
       const res = await request(app).get('/unknown-path');
