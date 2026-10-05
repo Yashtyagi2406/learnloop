@@ -1,6 +1,7 @@
 {
   "name": "learnloop-api",
   "version": "1.0.0",
+  "type": "module",
   "description": "Backend API for LearnLoop course and progress tracking",
   "main": "dist/index.js",
   "scripts": {
