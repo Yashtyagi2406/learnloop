@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api';
-import GradientBlinds from '../components/GradientBlinds';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -33,57 +32,18 @@ export default function Auth() {
 
   return (
     <div style={{ maxWidth: 440, margin: '40px auto' }}>
-      <div
-        style={{
-          width: '100%',
-          height: '140px',
-          position: 'relative',
-          borderRadius: '14px 14px 0 0',
-          overflow: 'hidden',
-          background: '#0c0f1e'
-        }}
-      >
-        <GradientBlinds
-          gradientColors={['#FF9FFC', '#5227FF']}
-          angle={0}
-          noise={0.3}
-          blindCount={12}
-          blindMinWidth={45}
-          spotlightRadius={0.5}
-          spotlightSoftness={1}
-          spotlightOpacity={1}
-          mouseDampening={0.15}
-          distortAmount={0}
-          shineDirection="left"
-          mixBlendMode="lighten"
-        />
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'rgba(0, 0, 0, 0.25)',
-            pointerEvents: 'none'
-          }}
-        >
-          <span style={{ color: '#fff', fontSize: '1.6rem', fontWeight: 800, letterSpacing: '-0.02em', textShadow: '0 2px 8px rgba(0,0,0,0.6)' }}>
+      <div className="panel fade">
+        <div style={{ marginBottom: 20 }}>
+          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--acc)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             LearnLoop
           </span>
-          <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.85rem' }}>
-            Master skills step by step
-          </span>
+          <h2 style={{ margin: '4px 0 6px' }}>{isLogin ? 'Sign in to LearnLoop' : 'Create an account'}</h2>
+          <p style={{ color: 'var(--mute)', margin: 0 }}>
+            {isLogin
+              ? 'Sign in to save and sync your learning progress.'
+              : 'Register to start tracking your courses across devices.'}
+          </p>
         </div>
-      </div>
-      <div className="panel fade" style={{ borderRadius: '0 0 14px 14px', borderTop: 'none' }}>
-        <h2>{isLogin ? 'Sign in to LearnLoop' : 'Create an account'}</h2>
-        <p style={{ color: 'var(--mute)', marginBottom: 20 }}>
-          {isLogin
-            ? 'Sign in to save and sync your learning progress.'
-            : 'Register to start tracking your courses across devices.'}
-        </p>
 
         {error && (
           <div

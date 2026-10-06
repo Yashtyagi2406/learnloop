@@ -7,6 +7,7 @@ import CourseDetail from './pages/CourseDetail'
 import Quiz from './pages/Quiz'
 import Auth from './pages/Auth'
 import { api } from './api'
+import GradientBlinds from './components/GradientBlinds'
 
 // Redirects to /auth if no token is present
 function ProtectedRoute({children}){
@@ -34,6 +35,23 @@ export default function App(){
 
   return (
     <ProgressProvider>
+      <div className="app-background" aria-hidden="true">
+        <GradientBlinds
+          gradientColors={['#FF9FFC', '#5227FF', '#2BD2FF']}
+          angle={25}
+          noise={0.25}
+          blindCount={20}
+          blindMinWidth={55}
+          spotlightRadius={0.65}
+          spotlightSoftness={1}
+          spotlightOpacity={1}
+          mouseDampening={0.15}
+          distortAmount={0}
+          shineDirection="left"
+          mixBlendMode="lighten"
+          lightMode={theme === 'light'}
+        />
+      </div>
       <header className="top">
         <Link to="/" className="brand">LearnLoop</Link>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
