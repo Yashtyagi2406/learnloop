@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../api';
 
 export default function Auth() {
@@ -134,11 +134,7 @@ export default function Auth() {
           )}
         </div>
 
-        <div style={{ marginTop: 14, textAlign: 'center' }}>
-          <Link to="/" className="back">
-            ← Back to courses
-          </Link>
-        </div>
+
       </div>
     </div>
   );

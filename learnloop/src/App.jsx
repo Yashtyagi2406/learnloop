@@ -1,5 +1,5 @@
 import {useEffect,useState} from 'react'
-import {Routes,Route,Link} from 'react-router-dom'
+import {Routes,Route,Link,Navigate} from 'react-router-dom'
 import {ProgressProvider} from './state'
 import {Empty} from './ui'
 import CourseList from './pages/CourseList'
@@ -7,6 +7,18 @@ import CourseDetail from './pages/CourseDetail'
 import Quiz from './pages/Quiz'
 import Auth from './pages/Auth'
 import { api } from './api'
+
+// Redirects to /auth if no token is present
+function ProtectedRoute({children}){
+  const isAuth = Boolean(localStorage.getItem('token'))
+  return isAuth ? children : <Navigate to="/auth" replace />
+}
+
+// Redirects already-logged-in users away from /auth
+function PublicOnlyRoute({children}){
+  const isAuth = Boolean(localStorage.getItem('token'))
+  return isAuth ? <Navigate to="/" replace /> : children
+}
 
 export default function App(){
   const [theme,setTheme]=useState(()=>localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'))
@@ -35,10 +47,10 @@ export default function App(){
       </header>
       <main className="wrap">
         <Routes>
-          <Route path="/" element={<CourseList/>}/>
-          <Route path="/auth" element={<Auth/>}/>
-          <Route path="/courses/:id" element={<CourseDetail/>}/>
-          <Route path="/courses/:id/quiz" element={<Quiz/>}/>
+          <Route path="/auth" element={<PublicOnlyRoute><Auth/></PublicOnlyRoute>}/>
+          <Route path="/" element={<ProtectedRoute><CourseList/></ProtectedRoute>}/>
+          <Route path="/courses/:id" element={<ProtectedRoute><CourseDetail/></ProtectedRoute>}/>
+          <Route path="/courses/:id/quiz" element={<ProtectedRoute><Quiz/></ProtectedRoute>}/>
           <Route path="*" element={<Empty title="Page not found" text="That link doesn't lead anywhere." action={<Link className="btn" to="/">Browse courses</Link>}/>}/>
         </Routes>
       </main>
