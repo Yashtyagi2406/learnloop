@@ -2,6 +2,9 @@
 
 A modern full-stack learning platform featuring interactive courses, structured lessons, progress tracking, and timed quizzes.
 
+🌐 **Live Demo**: [learnloop-tau.vercel.app](https://learnloop-tau.vercel.app/)  
+🔌 **Live API**: [learnloop-api-oq7q.onrender.com](https://learnloop-api-oq7q.onrender.com)
+
 ```
 learnloop/
 ├── learnloop/        # React + Vite frontend application
@@ -10,7 +13,26 @@ learnloop/
 
 ---
 
-## Quick Start
+## Tech Stack
+
+### Frontend (`learnloop/`)
+- **Framework**: React 18 with Vite
+- **Routing**: React Router (HashRouter)
+- **Styling**: Vanilla CSS design system with dark/light mode toggle
+- **Effects**: WebGL animated background via `ogl`
+- **Persistence**: Real-time sync with backend API and offline fallback
+
+### Backend (`learnloop-api/`)
+- **Runtime & Language**: Node.js, TypeScript
+- **Server**: Express with CORS & centralized error handling
+- **Database**: SQLite via `better-sqlite3` (WAL mode, foreign keys enabled)
+- **Validation**: Zod schema validation on write operations
+- **Security**: JWT authentication with bcrypt password hashing
+- **Testing**: Vitest + Supertest integration test suite (22/22 passing)
+
+---
+
+## Quick Start (Local Development)
 
 ### 1. Install & Start Backend
 ```bash
@@ -32,24 +54,6 @@ Visit [http://localhost:5173](http://localhost:5173) in your browser.
 
 ---
 
-## Tech Stack
-
-### Frontend (`learnloop/`)
-- **Framework**: React 18 with Vite
-- **Routing**: React Router (HashRouter)
-- **Styling**: Vanilla CSS design system with dark/light mode toggle
-- **Persistence**: Real-time sync with backend API and offline fallback
-
-### Backend (`learnloop-api/`)
-- **Runtime & Language**: Node.js, TypeScript
-- **Server**: Express with CORS & centralized error handling
-- **Database**: SQLite via `better-sqlite3` (WAL mode, foreign keys enabled)
-- **Validation**: Zod schema validation on write operations
-- **Security**: JWT authentication with bcrypt password hashing
-- **Testing**: Vitest + Supertest integration test suite
-
----
-
 ## Verification & Testing
 
 ### Running Backend Tests
@@ -67,25 +71,22 @@ npm test
 
 ---
 
-## Production Deployment (Vercel + Render)
+## Production Deployment
 
-### 1. Deploy Backend to Render (Free)
-1. Sign up / Log in to [render.com](https://render.com).
-2. Click **New +** → **Blueprint** (or **Web Service**).
-3. Connect your GitHub repository: `https://github.com/Yashtyagi2406/learnloop`.
-4. Render will automatically detect `render.yaml`:
+| Service | Provider | URL |
+|---------|----------|-----|
+| Frontend | Vercel | [learnloop-tau.vercel.app](https://learnloop-tau.vercel.app/) |
+| Backend API | Render | [learnloop-api-oq7q.onrender.com](https://learnloop-api-oq7q.onrender.com) |
+
+### Re-deploying Backend (Render)
+1. Log in to [render.com](https://render.com) and open the `learnloop-api` service.
+2. Pushes to `main` trigger auto-deploys via the `render.yaml` Blueprint:
    - **Root Directory**: `learnloop-api`
-   - **Build Command**: `npm install && npm run build`
+   - **Build Command**: `npm install --include=dev && npm run build`
    - **Start Command**: `npm start`
-5. Click **Apply**. Once deployed, Render will provide your live API URL (e.g., `https://learnloop-api.onrender.com`).
+3. The server self-pings its `/health` endpoint every 10 minutes to prevent free-tier sleep.
 
-### 2. Deploy Frontend to Vercel (Free)
-1. Sign up / Log in to [vercel.com](https://vercel.com).
-2. Click **Add New...** → **Project** and import `Yashtyagi2406/learnloop`.
-3. Configure the project settings:
-   - **Root Directory**: Click *Edit* and select `learnloop`.
-   - **Framework Preset**: `Vite`
-   - **Environment Variables**: Add `VITE_API_URL` set to your Render backend URL (e.g. `https://learnloop-api.onrender.com`).
-4. Click **Deploy**.
-5. Your live LearnLoop platform will be deployed with full SSL and global CDN!
-
+### Re-deploying Frontend (Vercel)
+1. Log in to [vercel.com](https://vercel.com) and open the `learnloop` project.
+2. Pushes to `main` trigger auto-deploys.
+3. Ensure the `VITE_API_URL` environment variable is set to `https://learnloop-api-oq7q.onrender.com`.
