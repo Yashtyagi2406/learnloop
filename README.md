@@ -64,3 +64,28 @@ npm test
 3. Open the app, mark lessons as completed.
 4. Refresh the page: notice progress persists across refreshes and is stored in SQLite `progress` table.
 5. Take a course quiz and complete it: score is recorded in SQLite `results` table.
+
+---
+
+## Production Deployment (Vercel + Render)
+
+### 1. Deploy Backend to Render (Free)
+1. Sign up / Log in to [render.com](https://render.com).
+2. Click **New +** → **Blueprint** (or **Web Service**).
+3. Connect your GitHub repository: `https://github.com/Yashtyagi2406/learnloop`.
+4. Render will automatically detect `render.yaml`:
+   - **Root Directory**: `learnloop-api`
+   - **Build Command**: `npm install && npm run build`
+   - **Start Command**: `npm start`
+5. Click **Apply**. Once deployed, Render will provide your live API URL (e.g., `https://learnloop-api.onrender.com`).
+
+### 2. Deploy Frontend to Vercel (Free)
+1. Sign up / Log in to [vercel.com](https://vercel.com).
+2. Click **Add New...** → **Project** and import `Yashtyagi2406/learnloop`.
+3. Configure the project settings:
+   - **Root Directory**: Click *Edit* and select `learnloop`.
+   - **Framework Preset**: `Vite`
+   - **Environment Variables**: Add `VITE_API_URL` set to your Render backend URL (e.g. `https://learnloop-api.onrender.com`).
+4. Click **Deploy**.
+5. Your live LearnLoop platform will be deployed with full SSL and global CDN!
+

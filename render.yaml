@@ -1,0 +1,16 @@
+services:
+  # Backend API on Render
+  - type: web
+    name: learnloop-api
+    runtime: node
+    rootDir: learnloop-api
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: '*'

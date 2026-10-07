@@ -21,9 +21,9 @@ if (courseCountRow.count === 0) {
 
 const app = createApp(db);
 
-const server = app.listen(port, () => {
-  console.log(`LearnLoop API listening on http://localhost:${port}`);
-  console.log(`Health check: http://localhost:${port}/health`);
+const server = app.listen(port, '0.0.0.0', () => {
+  console.log(`LearnLoop API listening on port ${port}`);
+  console.log(`Health check: http://0.0.0.0:${port}/health`);
 });
 
 // Graceful shutdown
