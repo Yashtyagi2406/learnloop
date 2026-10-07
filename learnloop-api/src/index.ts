@@ -24,6 +24,22 @@ const app = createApp(db);
 const server = app.listen(port, '0.0.0.0', () => {
   console.log(`LearnLoop API listening on port ${port}`);
   console.log(`Health check: http://0.0.0.0:${port}/health`);
+
+  // Keep-alive self-ping: prevents Render free tier from sleeping after 15 min inactivity.
+  // Pings own /health endpoint every 10 minutes.
+  const selfPingUrl = process.env.RENDER_EXTERNAL_URL
+    ? `${process.env.RENDER_EXTERNAL_URL}/health`
+    : `http://0.0.0.0:${port}/health`;
+
+  if (process.env.NODE_ENV === 'production') {
+    const PING_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
+    setInterval(() => {
+      fetch(selfPingUrl)
+        .then(() => console.log(`[keep-alive] pinged ${selfPingUrl}`))
+        .catch((err: Error) => console.warn(`[keep-alive] ping failed: ${err.message}`));
+    }, PING_INTERVAL_MS);
+    console.log(`[keep-alive] Self-ping enabled every 10 minutes → ${selfPingUrl}`);
+  }
 });
 
 // Graceful shutdown
