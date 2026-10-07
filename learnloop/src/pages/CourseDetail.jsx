@@ -30,10 +30,45 @@ export default function CourseDetail(){
         </nav>
         <article key={l.id} className="panel fade">
           <h2>{l.title}</h2>
-          <p>{l.content}</p>
-          <button className={isDone(c.id,l.id)?'btn ghost':'btn'} onClick={()=>toggle(c.id,l.id)}>
-            {isDone(c.id,l.id)?'Completed. Undo':'Mark as completed'}
-          </button>
+          <div className="lesson-body">
+            {l.content.split('\n\n').map((block, bIdx) => {
+              if (block.startsWith('```') && block.endsWith('```')) {
+                const codeLines = block.slice(3, -3).split('\n');
+                const firstLine = codeLines[0].trim();
+                const code = ['html', 'css', 'javascript', 'jsx', 'bash', 'js'].includes(firstLine)
+                  ? codeLines.slice(1).join('\n')
+                  : codeLines.join('\n');
+                return (
+                  <pre key={bIdx} className="code-block">
+                    <code>{code.trim()}</code>
+                  </pre>
+                );
+              }
+              if (block.startsWith('• ') || block.startsWith('- ')) {
+                const items = block.split('\n').filter(Boolean);
+                return (
+                  <ul key={bIdx} className="lesson-list">
+                    {items.map((item, iIdx) => (
+                      <li key={iIdx}>{item.replace(/^[•\-]\s*/, '')}</li>
+                    ))}
+                  </ul>
+                );
+              }
+              if (block.startsWith('💡') || block.startsWith('⚠️')) {
+                return (
+                  <div key={bIdx} className="lesson-callout">
+                    {block}
+                  </div>
+                );
+              }
+              return <p key={bIdx}>{block}</p>;
+            })}
+          </div>
+          <div style={{ marginTop: 24, paddingTop: 18, borderTop: '1px solid var(--line)' }}>
+            <button className={isDone(c.id,l.id)?'btn ghost':'btn'} onClick={()=>toggle(c.id,l.id)}>
+              {isDone(c.id,l.id)?'Completed. Undo':'Mark as completed'}
+            </button>
+          </div>
         </article>
       </div>
       <Link className="btn" to={`/courses/${c.id}/quiz`}>Start quiz</Link>
